@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ข้อมูลจากหลายไฟล์</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 2rem; background-color: #f4f7f9; }
+        .container { max-width: 1200px; margin: auto; }
+        h2 { border-bottom: 2px solid #3498db; padding-bottom: 0.5rem; margin-top: 2rem; }
+        .loading { text-align: center; color: #888; margin-top: 1rem; }
+        .table-container {
+            overflow-x: auto;
+            margin-top: 1rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        table { width: 100%; border-collapse: collapse; background-color: #ffffff; font-size: 0.875rem; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #dee2e6; }
+        th { background-color: #3498db; color: #ffffff; }
+        tbody tr:nth-child(even) { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>สถานะการทำงานของช่าง (ไฟล์ที่ 1)</h2>
+        <div id="table1-loading" class="loading">กำลังโหลดข้อมูล...</div>
+        <div id="table1-container" class="table-container" style="display: none;">
+            <table><thead></thead><tbody></tbody></table>
+        </div>
+
+        <h2>บันทึกการแก้ไขล่าสุด 10 รายการ (ไฟล์ที่ 1)</h2>
+        <div id="table2-loading" class="loading">กำลังโหลดข้อมูล...</div>
+        <div id="table2-container" class="table-container" style="display: none;">
+            <table><thead></thead><tbody></tbody></table>
+        </div>
+
+        <h2>ข้อมูลจากไฟล์ที่ 2</h2>
+        <div id="table3-loading" class="loading">กำลังโหลดข้อมูล...</div>
+        <div id="table3-container" class="table-container" style="display: none;">
+            <table><thead></thead><tbody></tbody></table>
+        </div>
+
+        <h2>ข้อมูลจากไฟล์ที่ 3</h2>
+        <div id="table4-loading" class="loading">กำลังโหลดข้อมูล...</div>
+        <div id="table4-container" class="table-container" style="display: none;">
+            <table><thead></thead><tbody></tbody></table>
+        </div>
+    </div>
+
+    <script>
+        const API_URLS = {
+            table1: 'https://script.google.com/macros/s/AKfycbyVee-6CcKZvk8A2RbQaXYERqlUaF9Z5yxcODfLPyDqi6G2gzCVvJkMjaYnjRfxu8fV/exec', 
+            table2: 'https://script.google.com/macros/s/AKfycbxzjGHfkqzajyFXh26UEj_78ogJs19RwVSjigrM3IgSXi5SM4p7icEsnQg4mKvE8n9m/exec',
+            table3: 'https://script.google.com/macros/s/AKfycbxql8Lf4C2HK0ZhLNKezOG0hmcEKG9bQmiKi9rBRsQLiuJHUyL1_KcGIRDVSjvAgJ-_LA/exec',
+            table4: 'https://script.google.com/macros/s/AKfycbwLf3abzSefz2U9dP2l0I0WYgpsxVkpfzJ8WEfYuhKH2e7qc8jjRC7P3LHVtenZ54zvEA/exec'
+        };
+
+        async function fetchData(url, tableId) {
+            const loading = document.getElementById(tableId + '-loading');
+            const tableContainer = document.getElementById(tableId + '-container');
+            const table = tableContainer.querySelector('table');
+            const thead = table.querySelector('thead');
+            const tbody = table.querySelector('tbody');
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                loading.style.display = 'none';
+                tableContainer.style.display = 'block';
+
+                if (data.length > 0) {
+                    const headers = Object.keys(data[0]);
+                    let headerRow = '<tr>';
+                    headers.forEach(header => { headerRow += `<th>${header}</th>`; });
+                    headerRow += '</tr>';
+                    thead.innerHTML = headerRow;
+
+                    let bodyRows = '';
+                    data.forEach(item => {
+                        let row = '<tr>';
+                        headers.forEach(header => { row += `<td>${item[header]}</td>`; });
+                        row += '</tr>';
+                        bodyRows += row;
+                    });
+                    tbody.innerHTML = bodyRows;
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="100%">ไม่มีข้อมูล</td></tr>';
+                }
+            } catch (error) {
+                loading.innerText = 'ไม่สามารถดึงข้อมูลได้';
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        fetchData(API_URLS.table1, 'table1');
+        fetchData(API_URLS.table2, 'table2');
+        fetchData(API_URLS.table3, 'table3');
+        fetchData(API_URLS.table4, 'table4');
+    </script>
+</body>
+</html>
