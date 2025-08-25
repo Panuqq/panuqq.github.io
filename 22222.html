@@ -1,58 +1,127 @@
-<style>
-  body {
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background-color: #f0f2f5;
-    margin: 0;
-    padding: 0; /* เอา padding ออกเพื่อให้เต็มจอจริง ๆ */
-    color: #333;
-  }
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เทมเพลตตาราง</title>
+    
+    <style>
+        /* CSS สำหรับการจัดสไตล์ทั้งหมด */
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+        }
 
-  .main-container {
-    width: 100vw;     /* ให้ container กว้างเต็มจอ */
-    height: 100vh;    /* ให้สูงเต็มหน้าจอ */
-    margin: 0;
-    background: #fff;
-    border-radius: 0; /* เอามุมโค้งออก ถ้าอยากเต็มจริง ๆ */
-    box-shadow: none; /* ไม่ต้องเงา */
-    display: flex;
-    flex-direction: column;
-  }
+        .main-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
 
-  .header-section {
-    background: #007bff;
-    color: #fff;
-    padding: 20px;
-    text-align: center;
-    font-size: 2em;
-    font-weight: 600;
-  }
+        .header-section {
+            background-color: #007bff;
+            color: white;
+            padding: 25px;
+            text-align: center;
+            font-size: 2em;
+            font-weight: 600;
+        }
 
-  .table-section {
-    flex: 1; /* ให้ตารางยืดเต็มพื้นที่ที่เหลือ */
-    overflow: auto;
-  }
+        .table-section {
+            padding: 20px;
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            min-width: 800px;
+            border-collapse: collapse;
+            text-align: left;
+        }
+        
+        thead {
+            background-color: #e9f2ff;
+            color: #4a4a4a;
+        }
+        
+        th, td {
+            padding: 15px 18px;
+            border-bottom: 1px solid #f0f2f5;
+            white-space: nowrap;
+            font-size: 0.9em;
+        }
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-  }
+        th {
+            font-weight: 600;
+        }
 
-  thead {
-    background: #e9f2ff;
-    position: sticky;
-    top: 0;
-    z-index: 2;
-  }
+        tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+        
+        tr:hover {
+            background-color: #eef5ff;
+            transition: background-color 0.3s ease;
+        }
+    </style>
+</head>
+<body>
 
-  th, td {
-    padding: 12px 16px;
-    border-bottom: 1px solid #ddd;
-    white-space: nowrap;
-    font-size: 0.95em;
-  }
+<div class="main-container">
+    <div class="header-section">
+        หัวข้อตารางของคุณ
+    </div>
+    
+    <div class="table-section">
+        <table>
+            <thead>
+                <tr>
+                    <th>หัวข้อที่ 1</th>
+                    <th>หัวข้อที่ 2</th>
+                    <th>หัวข้อที่ 3</th>
+                    <th>หัวข้อที่ 4</th>
+                    <th>หัวข้อที่ 5</th>
+                    <th>หัวข้อที่ 6</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>ข้อมูลแถวที่ 1</td>
+                    <td>ตัวอย่างที่ 2</td>
+                    <td>รายละเอียด 3</td>
+                    <td>ข้อมูล 4</td>
+                    <td>ตัวอย่าง 5</td>
+                    <td>ข้อมูล 6</td>
+                </tr>
+                <tr>
+                    <td>ข้อมูลแถวที่ 2</td>
+                    <td>ตัวอย่างที่ 2</td>
+                    <td>รายละเอียด 3</td>
+                    <td>ข้อมูล 4</td>
+                    <td>ตัวอย่าง 5</td>
+                    <td>ข้อมูล 6</td>
+                </tr>
+                <tr>
+                    <td>ข้อมูลแถวที่ 3</td>
+                    <td>ตัวอย่างที่ 2</td>
+                    <td>รายละเอียด 3</td>
+                    <td>ข้อมูล 4</td>
+                    <td>ตัวอย่าง 5</td>
+                    <td>ข้อมูล 6</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 
-  tr:nth-child(even) { background: #fafafa; }
-  tr:
-
-
-
+</body>
+</html>
