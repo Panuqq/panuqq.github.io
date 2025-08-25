@@ -3,173 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ข้อมูลจาก Google Sheets</title>
-
+    <title>ข้อมูลแบบการ์ด</title>
+    
     <style>
-        /* CSS สำหรับการจัดสไตล์ทั้งหมด */
+        /* CSS สำหรับการออกแบบหน้าเว็บและกล่องข้อมูล (Cards) */
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f0f2f5;
             margin: 0;
-            padding: 20px;
+            padding: 40px;
         }
 
         .main-container {
-            width: 100%;
             max-width: 1200px;
+            margin: auto;
+        }
+
+        .header-section {
+            background-color: #007bff;
+            color: white;
+            padding: 25px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 2em;
+            font-weight: 600;
+            border-radius: 10px;
+        }
+
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .data-card {
             background-color: #ffffff;
             border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-
-        .table-section {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
             padding: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
         }
 
-        .table-header {
-            background-color: #007bff;
-            color: white;
-            padding: 20px;
-            text-align: center;
-            font-size: 1.5em;
+        .data-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
         }
 
-        .section-header {
-            text-align: center;
-            font-size: 1.8em;
+        .card-title {
+            font-size: 1.4em;
+            font-weight: bold;
             color: #333;
-            margin-top: 30px;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #ddd;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-            margin-top: 10px;
+            margin-bottom: 10px;
         }
 
-        thead {
-            background-color: #007bff;
-            color: white;
-        }
-
-        th, td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #ddd;
-            word-wrap: break-word;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-
-        tr:hover {
-            background-color: #e9e9e9;
+        .card-detail {
+            font-size: 1em;
+            color: #555;
+            margin: 5px 0;
         }
 
         .loading-text {
             text-align: center;
-            padding: 20px;
-            color: #555;
+            padding: 40px;
+            color: #777;
+            font-size: 1.1em;
         }
     </style>
 </head>
 <body>
 
 <div class="main-container">
-    <div class="table-header">
-        ข้อมูลสินค้าและยอดขายล่าสุด
+    <div class="header-section">
+        ข้อมูลสินค้าและยอดขาย
     </div>
     
-    <div class="table-section">
-        <h2 class="section-header">แผนงานรายวัน</h2>
-        <table id="daily-plan-table">
-            <thead></thead>
-            <tbody></tbody>
-        </table>
-        <div class="loading-text" id="loading-daily">
-            กำลังโหลดข้อมูล...
+    <div class="card-container" id="data-cards">
         </div>
 
-        <h2 class="section-header">รายการอัปเดตล่าสุด 10 อันดับ</h2>
-        <table id="recent-updates-table">
-            <thead></thead>
-            <tbody></tbody>
-        </table>
-        <div class="loading-text" id="loading-updates">
-            กำลังโหลดข้อมูล...
-        </div>
+    <div class="loading-text" id="loading">
+        กำลังโหลดข้อมูล...
     </div>
 </div>
 
 <script>
-    // ส่วนของ JavaScript สำหรับดึงข้อมูลและสร้างตาราง
-    // 🚩 เปลี่ยน URL สองตัวนี้ให้เป็นของชีตคุณ
-    const dailyPlanURL = 'วาง URL ของแผนงานรายวัน ที่นี่';
-    const updatesURL = 'วาง URL ของรายการอัปเดต ที่นี่';
+    // URL Google Sheets ที่เผยแพร่เป็น CSV แล้ว
+    const googleSheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTnB-1N6LupGLrbHjltAadnFAyvqCreHGERtOenGWUaktuYqUdjb4bVvqbFz5eTzF3oqXOs3UCF5tmN/pub?gid=0&single=true&output=csv';
 
-    async function fetchAndRenderTable(url, tableId, isRecentUpdates = false) {
+    async function fetchSheetData() {
         try {
-            const response = await fetch(url);
+            const response = await fetch(googleSheetURL);
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
             const dataText = await response.text();
             
+            // แปลงข้อมูล CSV เป็นอาร์เรย์
             const rows = dataText.split('\n').map(row => row.split(',').map(cell => cell.trim()));
-
-            const table = document.getElementById(tableId);
-            const tbody = table.querySelector('tbody');
-            const thead = table.querySelector('thead');
+            const header = rows[0]; // หัวข้อตาราง
+            const data = rows.slice(1); // ข้อมูลทั้งหมด
             
-            tbody.innerHTML = '';
-            thead.innerHTML = '';
+            const cardContainer = document.getElementById('data-cards');
+            cardContainer.innerHTML = '';
 
-            const headerRow = rows.length > 0 ? rows[0] : [];
-            const dataRows = rows.slice(1);
+            data.forEach(rowData => {
+                if (rowData.length > 1 || (rowData.length === 1 && rowData[0].trim() !== '')) {
+                    const card = document.createElement('div');
+                    card.classList.add('data-card');
 
-            const headerHtml = `<tr>${headerRow.map(header => `<th>${header}</th>`).join('')}</tr>`;
-            thead.innerHTML = headerHtml;
+                    // 🔹 ดึงข้อมูลจากแต่ละคอลัมน์มาแสดงผลในรูปแบบที่แตกต่างกัน
+                    const title = document.createElement('h3');
+                    title.classList.add('card-title');
+                    title.textContent = rowData[0]; // สมมติว่าคอลัมน์แรกเป็นชื่อสินค้า
 
-            // ถ้าเป็นรายการอัปเดต ให้แสดงแค่ 10 แถวล่าสุด
-            const rowsToDisplay = isRecentUpdates ? dataRows.slice(-10) : dataRows;
+                    const detail1 = document.createElement('p');
+                    detail1.classList.add('card-detail');
+                    detail1.textContent = `${header[1]}: ${rowData[1]}`; // คอลัมน์ที่ 2
 
-            rowsToDisplay.forEach(row => {
-                if (row.length > 0 && row.some(cell => cell.trim() !== '')) {
-                    const rowHtml = `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`;
-                    tbody.innerHTML += rowHtml;
+                    const detail2 = document.createElement('p');
+                    detail2.classList.add('card-detail');
+                    detail2.textContent = `${header[2]}: ${rowData[2]}`; // คอลัมน์ที่ 3
+
+                    const detail3 = document.createElement('p');
+                    detail3.classList.add('card-detail');
+                    detail3.textContent = `${header[3]}: ${rowData[3]}`; // คอลัมน์ที่ 4
+
+                    // นำส่วนประกอบทั้งหมดไปใส่ในการ์ด
+                    card.appendChild(title);
+                    card.appendChild(detail1);
+                    card.appendChild(detail2);
+                    card.appendChild(detail3);
+
+                    cardContainer.appendChild(card);
                 }
             });
 
-            document.getElementById('loading-' + tableId.split('-')[0]).style.display = 'none';
+            document.getElementById('loading').style.display = 'none';
 
         } catch (error) {
             console.error('Error fetching data:', error);
-            document.getElementById('loading-' + tableId.split('-')[0]).textContent = 'ไม่สามารถโหลดข้อมูลได้';
+            document.getElementById('loading').textContent = 'ไม่สามารถโหลดข้อมูลได้ โปรดตรวจสอบ URL หรือการเชื่อมต่ออินเทอร์เน็ต';
         }
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        // ดึงข้อมูลและแสดงผลสำหรับตาราง "แผนงานรายวัน"
-        fetchAndRenderTable(dailyPlanURL, 'daily-plan-table');
-
-        // ดึงข้อมูลและแสดงผลสำหรับตาราง "รายการอัปเดต"
-        fetchAndRenderTable(updatesURL, 'recent-updates-table', true);
-    });
-
-    // ตั้งเวลาอัปเดตข้อมูลทุก 5 นาที
-    setInterval(() => {
-        fetchAndRenderTable(dailyPlanURL, 'daily-plan-table');
-        fetchAndRenderTable(updatesURL, 'recent-updates-table', true);
-    }, 300000);
+    document.addEventListener('DOMContentLoaded', fetchSheetData);
+    setInterval(fetchSheetData, 300000);
 </script>
 
 </body>
