@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ตารางข้อมูลอัตโนมัติ</title>
+    
+    <style>
+        /* CSS สำหรับการจัดสไตล์ตารางให้ดูสวยงาม */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .table-container {
+            width: 100%;
+            max-width: 800px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+        
+        thead {
+            background-color: #007bff;
+            color: white;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+            word-wrap: break-word; /* เพื่อป้องกันข้อความยาวเกิน */
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        tr:hover {
+            background-color: #e9e9e9;
+        }
+        
+        .table-header {
+            background-color: #007bff;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.5em;
+        }
+
+        .loading-text {
+            text-align: center;
+            padding: 20px;
+            color: #555;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="table-container">
+    <div class="table-header">
+        ข้อมูลสินค้าและยอดขายล่าสุด
+    </div>
+    
+    <table>
+        <thead>
+            </thead>
+        <tbody>
+            </tbody>
+    </table>
+    
+    <div class="loading-text" id="loading">
+        กำลังโหลดข้อมูล...
+    </div>
+</div>
+
+<script>
+    // ส่วนของ JavaScript สำหรับดึงข้อมูลและสร้างตาราง
+    const googleSheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTnB-1N6LupGLrbHjltAadnFAyvqCreHGERtOenGWUaktuYqUdjb4bVvqbFz5eTzF3oqXOs3UCF5tmN/pub?gid=0&single=true&output=csv';
+
+    async function fetchSheetData() {
+        try {
+            const response = await fetch(googleSheetURL);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const dataText = await response.text();
+            
+            // ใช้ PapaParse เพื่อจัดการข้อมูล CSV ได้ดีขึ้น
+            // เนื่องจากไม่ได้ให้ PapaParse มาด้วย จึงใช้การแบ่งข้อมูลแบบธรรมดาแทน
+            const rows = dataText.split('\n').map(row => row.split(',').map(cell => cell.trim()));
+
+            const table = document.querySelector('table');
+            const tbody = table.querySelector('tbody');
+            const thead = table.querySelector('thead');
+            
+            // ล้างข้อมูลเก่า
+            tbody.innerHTML = '';
+            thead.innerHTML = '';
+
+            // สร้างหัวตาราง (จากแถวแรกของชีต)
+            const headerRow = rows[0];
+            const headerHtml = `<tr>${headerRow.map(header => `<th>${header}</th>`).join('')}</tr>`;
+            thead.innerHTML = headerHtml;
+
+            // สร้างแถวข้อมูล (จากแถวที่สองเป็นต้นไป)
+            for (let i = 1; i < rows.length; i++) {
+                const row = rows[i];
+                if (row.length > 1 || (row.length === 1 && row[0].trim() !== '')) {
+                    const rowHtml = `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`;
+                    tbody.innerHTML += rowHtml;
+                }
+            }
+
+            // ซ่อนข้อความ "กำลังโหลดข้อมูล..."
+            document.getElementById('loading').style.display = 'none';
+
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            document.getElementById('loading').textContent = 'ไม่สามารถโหลดข้อมูลได้ โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตหรือ URL';
+        }
+    }
+
+    // เรียกใช้ฟังก์ชันเมื่อหน้าเว็บโหลดเสร็จ
+    document.addEventListener('DOMContentLoaded', fetchSheetData);
+
+    // เรียกใช้ทุกๆ 5 นาทีเพื่ออัปเดตข้อมูลอัตโนมัติ (300000 มิลลิวินาที = 5 นาที)
+    setInterval(fetchSheetData, 300000);
+</script>
+
+</body>
+</html>
