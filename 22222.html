@@ -3,101 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ตารางข้อมูลอัตโนมัติ</title>
+    <title>ข้อมูลจาก Google Sheets</title>
     
     <style>
-        /* CSS สำหรับการจัดสไตล์ตารางให้ดูสวยงามและใช้งานง่าย */
+        /* CSS สำหรับการออกแบบทั้งหมด */
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #eef2f5;
+            color: #333;
+            margin: 0;
+            padding: 40px 20px;
             display: flex;
             justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
+            align-items: flex-start;
         }
 
-        .table-container {
+        .dashboard-container {
             width: 100%;
             max-width: 900px;
             background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
             overflow: hidden;
-            /* ทำให้ตารางสามารถเลื่อนในแนวนอนได้ */
+        }
+
+        .dashboard-header {
+            background-color: #4a90e2;
+            color: white;
+            padding: 24px;
+            text-align: center;
+            font-size: 1.8em;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .table-wrapper {
+            padding: 24px;
             overflow-x: auto;
         }
         
         table {
             width: 100%;
+            min-width: 600px; /* ทำให้เลื่อนแนวนอนได้ */
             border-collapse: collapse;
             text-align: left;
         }
         
         thead {
-            background-color: #007bff;
+            background-color: #55a0f2;
             color: white;
-            /* ทำให้หัวตารางลอยติดด้านบนเมื่อเลื่อนลงมา */
             position: sticky;
-            top: 0;
+            top: -24px; /* ปรับให้ลอยติดเมื่อเลื่อน */
             z-index: 2;
         }
         
         th, td {
-            padding: 10px 12px;
-            border-bottom: 1px solid #ddd;
-            /* ไม่ให้ข้อความตัดบรรทัด เพื่อให้ดูข้อมูลได้ครบในแนวนอน */
+            padding: 12px 18px;
+            border-bottom: 1px solid #e5e5e5;
             white-space: nowrap;
-            font-size: 14px;
+            font-size: 0.9em;
+        }
+
+        th {
+            font-weight: 600;
         }
         
         tr:nth-child(even) {
-            background-color: #f2f2f2;
+            background-color: #f7f9fc;
         }
         
         tr:hover {
-            background-color: #e9e9e9;
+            background-color: #eef2f5;
+            transition: background-color 0.3s ease;
         }
         
-        .table-header {
-            background-color: #007bff;
-            color: white;
-            padding: 20px;
-            text-align: center;
-            font-size: 1.5em;
-            font-weight: bold;
-        }
-
         .loading-text {
             text-align: center;
-            padding: 20px;
-            color: #555;
+            padding: 40px;
+            color: #777;
+            font-size: 1.1em;
         }
 
     </style>
 </head>
 <body>
 
-<div class="table-container">
-    <div class="table-header">
+<div class="dashboard-container">
+    <div class="dashboard-header">
         ข้อมูลสินค้าและยอดขายล่าสุด
     </div>
     
-    <table>
-        <thead>
-            </thead>
-        <tbody>
-            </tbody>
-    </table>
-    
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                </thead>
+            <tbody>
+                </tbody>
+        </table>
+    </div>
+
     <div class="loading-text" id="loading">
         กำลังโหลดข้อมูล...
     </div>
 </div>
 
 <script>
-    // URL Google Sheets ที่ publish เป็น CSV แล้ว
+    // URL Google Sheets ที่เผยแพร่เป็น CSV แล้ว
     const googleSheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTnB-1N6LupGLrbHjltAadnFAyvqCreHGERtOenGWUaktuYqUdjb4bVvqbFz5eTzF3oqXOs3UCF5tmN/pub?gid=0&single=true&output=csv';
 
     async function fetchSheetData() {
@@ -108,23 +120,20 @@
             }
             const dataText = await response.text();
             
-            // แปลงข้อมูล CSV เป็นอาร์เรย์ของแถวและคอลัมน์
+            // แปลงข้อมูล CSV เป็นอาร์เรย์
             const rows = dataText.split('\n').map(row => row.split(',').map(cell => cell.trim()));
 
             const table = document.querySelector('table');
             const tbody = table.querySelector('tbody');
             const thead = table.querySelector('thead');
             
-            // ล้างข้อมูลเก่าก่อนสร้างใหม่
             tbody.innerHTML = '';
             thead.innerHTML = '';
 
-            // สร้างหัวตาราง (จากแถวแรกของชีต)
             const headerRow = rows[0];
             const headerHtml = `<tr>${headerRow.map(header => `<th>${header}</th>`).join('')}</tr>`;
             thead.innerHTML = headerHtml;
 
-            // สร้างแถวข้อมูล (จากแถวที่สองเป็นต้นไป)
             for (let i = 1; i < rows.length; i++) {
                 const row = rows[i];
                 if (row.length > 1 || (row.length === 1 && row[0].trim() !== '')) {
@@ -133,7 +142,6 @@
                 }
             }
 
-            // ซ่อนข้อความ "กำลังโหลดข้อมูล..."
             document.getElementById('loading').style.display = 'none';
 
         } catch (error) {
@@ -142,13 +150,9 @@
         }
     }
 
-    // เรียกใช้ฟังก์ชันเมื่อหน้าเว็บโหลดเสร็จ
     document.addEventListener('DOMContentLoaded', fetchSheetData);
-
-    // ตั้งค่าให้รีเฟรชข้อมูลทุก 5 นาที
-    setInterval(fetchSheetData, 300000); // 300000 มิลลิวินาที = 5 นาที
+    setInterval(fetchSheetData, 300000); // อัปเดตข้อมูลทุกๆ 5 นาที
 </script>
 
 </body>
 </html>
-
