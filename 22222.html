@@ -3,64 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ข้อมูลจาก Google Sheets</title>
+    <title>ข้อมูลสรุป</title>
     
     <style>
-        /* CSS สำหรับการออกแบบทั้งหมด */
+        /* จัดวางหน้าเว็บให้ดูสะอาดตาและทันสมัย */
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: #eef2f5;
+            background-color: #f0f2f5;
             color: #333;
             margin: 0;
-            padding: 40px 20px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
+            padding: 40px;
         }
 
-        .dashboard-container {
+        .main-container {
             width: 100%;
-            max-width: 900px;
+            max-width: 1200px; /* ขยายความกว้างสูงสุดให้เต็มจอมากขึ้น */
+            margin: auto;
             background-color: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             overflow: hidden;
         }
 
-        .dashboard-header {
-            background-color: #4a90e2;
+        .header-section {
+            background-color: #007bff;
             color: white;
-            padding: 24px;
+            padding: 25px;
             text-align: center;
-            font-size: 1.8em;
-            font-weight: bold;
-            letter-spacing: 0.5px;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            font-size: 2em;
+            font-weight: 600;
         }
 
-        .table-wrapper {
-            padding: 24px;
-            overflow-x: auto;
+        .table-section {
+            padding: 20px;
+            overflow-x: auto; /* ทำให้เลื่อนแนวนอนได้ */
         }
         
         table {
             width: 100%;
-            min-width: 600px; /* ทำให้เลื่อนแนวนอนได้ */
+            min-width: 800px;
             border-collapse: collapse;
             text-align: left;
         }
         
         thead {
-            background-color: #55a0f2;
-            color: white;
+            background-color: #e9f2ff;
+            color: #4a4a4a;
             position: sticky;
-            top: -24px; /* ปรับให้ลอยติดเมื่อเลื่อน */
+            top: -20px;
             z-index: 2;
         }
         
         th, td {
-            padding: 12px 18px;
-            border-bottom: 1px solid #e5e5e5;
+            padding: 15px 18px;
+            border-bottom: 1px solid #f0f2f5;
             white-space: nowrap;
             font-size: 0.9em;
         }
@@ -68,13 +64,13 @@
         th {
             font-weight: 600;
         }
-        
+
         tr:nth-child(even) {
-            background-color: #f7f9fc;
+            background-color: #fafafa;
         }
         
         tr:hover {
-            background-color: #eef2f5;
+            background-color: #eef5ff;
             transition: background-color 0.3s ease;
         }
         
@@ -89,17 +85,15 @@
 </head>
 <body>
 
-<div class="dashboard-container">
-    <div class="dashboard-header">
+<div class="main-container">
+    <div class="header-section">
         ข้อมูลสินค้าและยอดขายล่าสุด
     </div>
     
-    <div class="table-wrapper">
+    <div class="table-section">
         <table>
-            <thead>
-                </thead>
-            <tbody>
-                </tbody>
+            <thead></thead>
+            <tbody></tbody>
         </table>
     </div>
 
@@ -120,7 +114,6 @@
             }
             const dataText = await response.text();
             
-            // แปลงข้อมูล CSV เป็นอาร์เรย์
             const rows = dataText.split('\n').map(row => row.split(',').map(cell => cell.trim()));
 
             const table = document.querySelector('table');
@@ -151,7 +144,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', fetchSheetData);
-    setInterval(fetchSheetData, 300000); // อัปเดตข้อมูลทุกๆ 5 นาที
+    setInterval(fetchSheetData, 300000);
 </script>
 
 </body>
