@@ -20,28 +20,35 @@
 
         .table-container {
             width: 100%;
-            max-width: 800px;
+            max-width: 100%;
             background-color: #ffffff;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
+            overflow-x: auto;   /* 🔹 เลื่อนซ้าย-ขวาได้ */
         }
         
         table {
             width: 100%;
             border-collapse: collapse;
             text-align: left;
+            table-layout: fixed; /* ให้ตารางจัดสัดส่วนอัตโนมัติ */
         }
         
         thead {
             background-color: #007bff;
             color: white;
+            position: sticky;   /* 🔹 ทำให้หัวตารางลอยติดบน */
+            top: 0;
+            z-index: 2;
         }
         
         th, td {
-            padding: 12px 15px;
+            padding: 8px 10px;          /* ลด padding */
             border-bottom: 1px solid #ddd;
-            word-wrap: break-word; /* เพื่อป้องกันข้อความยาวเกิน */
+            word-break: break-word;     /* ตัดคำอัตโนมัติ */
+            white-space: normal;        /* ขึ้นบรรทัดใหม่ได้ */
+            font-size: 0.9em;           /* ฟอนต์เล็กลง */
+            max-width: 200px;           /* จำกัดความกว้าง */
         }
         
         tr:nth-child(even) {
@@ -55,9 +62,11 @@
         .table-header {
             background-color: #007bff;
             color: white;
-            padding: 20px;
+            padding: 10px 15px;   /* ลด padding */
             text-align: center;
-            font-size: 1.0em;
+            font-size: 1em;
+            font-weight: bold;
+            white-space: nowrap;  /* ไม่ให้ตัดบรรทัด */
         }
 
         .loading-text {
@@ -76,10 +85,8 @@
     </div>
     
     <table>
-        <thead>
-            </thead>
-        <tbody>
-            </tbody>
+        <thead></thead>
+        <tbody></tbody>
     </table>
     
     <div class="loading-text" id="loading">
@@ -88,7 +95,7 @@
 </div>
 
 <script>
-    // ส่วนของ JavaScript สำหรับดึงข้อมูลและสร้างตาราง
+    // URL Google Sheets ที่ publish เป็น CSV
     const googleSheetURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTnB-1N6LupGLrbHjltAadnFAyvqCreHGERtOenGWUaktuYqUdjb4bVvqbFz5eTzF3oqXOs3UCF5tmN/pub?gid=0&single=true&output=csv';
 
     async function fetchSheetData() {
@@ -99,8 +106,7 @@
             }
             const dataText = await response.text();
             
-            // ใช้ PapaParse เพื่อจัดการข้อมูล CSV ได้ดีขึ้น
-            // เนื่องจากไม่ได้ให้ PapaParse มาด้วย จึงใช้การแบ่งข้อมูลแบบธรรมดาแทน
+            // แปลง CSV เป็น array
             const rows = dataText.split('\n').map(row => row.split(',').map(cell => cell.trim()));
 
             const table = document.querySelector('table');
@@ -137,10 +143,10 @@
     // เรียกใช้ฟังก์ชันเมื่อหน้าเว็บโหลดเสร็จ
     document.addEventListener('DOMContentLoaded', fetchSheetData);
 
-    // เรียกใช้ทุกๆ 5 นาทีเพื่ออัปเดตข้อมูลอัตโนมัติ (300000 มิลลิวินาที = 5 นาที)
+    // รีเฟรชข้อมูลทุก 5 นาที
     setInterval(fetchSheetData, 300000);
 </script>
 
 </body>
-
 </html>
+
