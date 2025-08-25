@@ -3,83 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ข้อมูลแบบการ์ด</title>
+    <title>ข้อมูลสรุป</title>
     
     <style>
-        /* CSS สำหรับการออกแบบหน้าเว็บและกล่องข้อมูล (Cards) */
+        /* จัดวางหน้าเว็บให้ดูสะอาดตาและทันสมัย */
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
             background-color: #f0f2f5;
+            color: #333;
             margin: 0;
             padding: 40px;
         }
 
         .main-container {
-            max-width: 1200px;
+            width: 100%;
+            max-width: 1200px; /* ขยายความกว้างสูงสุดให้เต็มจอมากขึ้น */
             margin: auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
         }
 
         .header-section {
             background-color: #007bff;
             color: white;
             padding: 25px;
-            margin-bottom: 20px;
             text-align: center;
             font-size: 2em;
             font-weight: 600;
-            border-radius: 10px;
         }
 
-        .card-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-        }
-
-        .data-card {
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        .table-section {
             padding: 20px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            position: relative;
+            overflow-x: auto; /* ทำให้เลื่อนแนวนอนได้ */
+        }
+        
+        table {
+            width: 100%;
+            min-width: 800px;
+            border-collapse: collapse;
+            text-align: left;
+        }
+        
+        thead {
+            background-color: #e9f2ff;
+            color: #4a4a4a;
+            position: sticky;
+            top: -20px;
+            z-index: 2;
+        }
+        
+        th, td {
+            padding: 15px 18px;
+            border-bottom: 1px solid #f0f2f5;
+            white-space: nowrap;
+            font-size: 0.9em;
         }
 
-        .data-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        th {
+            font-weight: 600;
         }
 
-        .card-title {
-            font-size: 1.4em;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 10px;
+        tr:nth-child(even) {
+            background-color: #fafafa;
         }
-
-        .card-detail {
-            font-size: 1em;
-            color: #555;
-            margin: 5px 0;
+        
+        tr:hover {
+            background-color: #eef5ff;
+            transition: background-color 0.3s ease;
         }
-
+        
         .loading-text {
             text-align: center;
             padding: 40px;
             color: #777;
             font-size: 1.1em;
         }
+
     </style>
 </head>
 <body>
 
 <div class="main-container">
     <div class="header-section">
-        ข้อมูลสินค้าและยอดขาย
+        ข้อมูลสินค้าและยอดขายล่าสุด
     </div>
     
-    <div class="card-container" id="data-cards">
-        </div>
+    <div class="table-section">
+        <table>
+            <thead></thead>
+            <tbody></tbody>
+        </table>
+    </div>
 
     <div class="loading-text" id="loading">
         กำลังโหลดข้อมูล...
@@ -98,47 +114,26 @@
             }
             const dataText = await response.text();
             
-            // แปลงข้อมูล CSV เป็นอาร์เรย์
             const rows = dataText.split('\n').map(row => row.split(',').map(cell => cell.trim()));
-            const header = rows[0]; // หัวข้อตาราง
-            const data = rows.slice(1); // ข้อมูลทั้งหมด
+
+            const table = document.querySelector('table');
+            const tbody = table.querySelector('tbody');
+            const thead = table.querySelector('thead');
             
-            const cardContainer = document.getElementById('data-cards');
-            cardContainer.innerHTML = '';
+            tbody.innerHTML = '';
+            thead.innerHTML = '';
 
-            data.forEach(rowData => {
-                if (rowData.length > 1 || (rowData.length === 1 && rowData[0].trim() !== '')) {
-                    const card = document.createElement('div');
-                    card.classList.add('data-card');
+            const headerRow = rows[0];
+            const headerHtml = `<tr>${headerRow.map(header => `<th>${header}</th>`).join('')}</tr>`;
+            thead.innerHTML = headerHtml;
 
-                    // 🔹 ดึงข้อมูลจากแต่ละคอลัมน์มาแสดงผลในรูปแบบที่แตกต่างกัน
-                    // ใช้ชื่อหัวข้อจากชีตมาแสดงผล
-                    const title = document.createElement('h3');
-                    title.classList.add('card-title');
-                    title.textContent = rowData[0]; // สมมติว่าคอลัมน์แรกเป็นชื่อสินค้า
-
-                    const detail1 = document.createElement('p');
-                    detail1.classList.add('card-detail');
-                    detail1.textContent = `${header[1]}: ${rowData[1]}`; // คอลัมน์ที่ 2
-
-                    const detail2 = document.createElement('p');
-                    detail2.classList.add('card-detail');
-                    detail2.textContent = `${header[2]}: ${rowData[2]}`; // คอลัมน์ที่ 3
-
-                    // เพิ่มส่วนอื่นๆ ของข้อมูลตามต้องการ
-                    const detail3 = document.createElement('p');
-                    detail3.classList.add('card-detail');
-                    detail3.textContent = `${header[3]}: ${rowData[3]}`; // คอลัมน์ที่ 4
-
-                    // นำส่วนประกอบทั้งหมดไปใส่ในการ์ด
-                    card.appendChild(title);
-                    card.appendChild(detail1);
-                    card.appendChild(detail2);
-                    card.appendChild(detail3);
-
-                    cardContainer.appendChild(card);
+            for (let i = 1; i < rows.length; i++) {
+                const row = rows[i];
+                if (row.length > 1 || (row.length === 1 && row[0].trim() !== '')) {
+                    const rowHtml = `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`;
+                    tbody.innerHTML += rowHtml;
                 }
-            });
+            }
 
             document.getElementById('loading').style.display = 'none';
 
@@ -149,7 +144,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', fetchSheetData);
-    setInterval(fetchSheetData, 300000); // อัปเดตข้อมูลทุกๆ 5 นาที
+    setInterval(fetchSheetData, 300000);
 </script>
 
 </body>
