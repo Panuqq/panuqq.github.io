@@ -26,21 +26,11 @@
 
   <div class="responsive-iframe">
     <iframe 
-      id="lookerFrame"
       src="https://lookerstudio.google.com/embed/reporting/42a026ab-4466-4b5b-a6b2-297d98deed1e/page/VyPWF"
       allowfullscreen>
     </iframe>
   </div>
 
-  <script>
-    // รีเฟรช iframe ทุก 1 นาที (60,000 ms)
-    const refreshInterval = 60 * 1000;
-
-    setInterval(() => {
-      const iframe = document.getElementById('lookerFrame');
-      iframe.src = iframe.src; // รีโหลด iframe
-    }, refreshInterval);
-  </script>
 </body>
 </html>
 
