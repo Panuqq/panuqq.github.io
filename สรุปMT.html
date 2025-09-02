@@ -3,12 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
+    .responsive-iframe {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%; /* 16:9 */
+      height: 0;
+      overflow: hidden;
     }
-    .full-screen-iframe {
+    .responsive-iframe iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
       border: 0;
@@ -16,11 +21,22 @@
   </style>
 </head>
 <body>
-  <iframe 
-    src="https://lookerstudio.google.com/embed/reporting/42a026ab-4466-4b5b-a6b2-297d98deed1e/page/VyPWF"
-    class="full-screen-iframe"
-    allowfullscreen>
-  </iframe>
+  <div class="responsive-iframe">
+    <iframe 
+      id="lookerFrame"
+      src="https://lookerstudio.google.com/embed/reporting/42a026ab-4466-4b5b-a6b2-297d98deed1e/page/VyPWF"
+      allowfullscreen>
+    </iframe>
+  </div>
+
+  <script>
+    // รีเฟรช iframe ทุก 1 นาที (60,000 ms)
+    const refreshInterval = 5 * 60 * 1000;
+
+    setInterval(() => {
+      const iframe = document.getElementById('lookerFrame');
+      iframe.src = iframe.src; // รีโหลด iframe
+    }, refreshInterval);
+  </script>
 </body>
 </html>
-
