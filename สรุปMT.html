@@ -3,17 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <style>
-    .responsive-iframe {
-      position: relative;
-      width: 100%;
-      padding-bottom: 56.25%; /* 16:9 */
-      height: 0;
-      overflow: hidden;
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden; /* ตัด scroll bar ออก */
     }
-    .responsive-iframe iframe {
-      position: absolute;
+    .responsive-iframe {
+      position: fixed;
       top: 0;
       left: 0;
+      width: 100%;
+      height: 100vh; /* เต็มจอสูงสุด */
+    }
+    .responsive-iframe iframe {
       width: 100%;
       height: 100%;
       border: 0;
@@ -30,12 +33,12 @@
   </div>
 
   <script>
-    // รีเฟรช iframe ทุก 1 นาที (60,000 ms)
+    // รีเฟรช iframe ทุก 4 นาที
     const refreshInterval = 4 * 60 * 1000;
 
     setInterval(() => {
       const iframe = document.getElementById('lookerFrame');
-      iframe.src = iframe.src; // รีโหลด iframe
+      iframe.src = iframe.src;
     }, refreshInterval);
   </script>
 </body>
