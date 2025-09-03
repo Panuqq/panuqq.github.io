@@ -7,19 +7,23 @@
       margin: 0;
       padding: 0;
       height: 100%;
-      overflow: hidden; /* ตัด scroll bar ออก */
+      overflow: hidden;
     }
     .responsive-iframe {
       position: fixed;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100vh; /* เต็มจอสูงสุด */
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
     .responsive-iframe iframe {
       width: 100%;
       height: 100%;
       border: 0;
+      object-fit: contain; /* 👈 ปรับให้แสดงพอดีในทุกขนาด */
     }
   </style>
 </head>
@@ -33,9 +37,8 @@
   </div>
 
   <script>
-    // รีเฟรช iframe ทุก 4 นาที
+    // รีเฟรชทุก 4 นาที
     const refreshInterval = 4 * 60 * 1000;
-
     setInterval(() => {
       const iframe = document.getElementById('lookerFrame');
       iframe.src = iframe.src;
@@ -43,4 +46,3 @@
   </script>
 </body>
 </html>
-
