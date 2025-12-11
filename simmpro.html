@@ -1,83 +1,105 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Looker + Running Text</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Looker + Running Text</title>
+<style>
+  html,body{
+    margin:0; padding:0; height:100%; background:#111;
+  }
+  /* กล่อง Looker - เว้นพื้นที่ด้านล่าง 60px ให้แถบวิ่ง */
+  .frame {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: calc(100vh - 60px);
+    z-index: 1;
+  }
+  .frame iframe{
+    width:100%;
+    height:100%;
+    border:0;
+    display:block;
+  }
 
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      overflow: hidden;
-      background: #000;
-    }
+  /* แถบข้อความด้านล่าง - อยู่บนสุดด้วย z-index สูง */
+  .running-bar {
+    position: fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    height:60px;
+    background:#ffd0e6;
+    display:flex;
+    align-items:center;
+    overflow:hidden;
+    z-index:9999; /* สำคัญ: ต้องสูงกว่า iframe */
+    box-shadow: 0 -3px 10px rgba(0,0,0,0.25);
+  }
 
-    /* กล่อง Looker */
-    .frame {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: calc(100vh - 50px); /* เว้นที่ด้านล่างให้ข้อความวิ่ง */
-    }
+  .running-text {
+    white-space:nowrap;
+    display:inline-block;
+    font-size:34px;
+    font-weight:700;
+    color:#d81b60;
+    padding-left:100%;
+    animation:scroll-left 12s linear infinite;
+  }
 
-    .frame iframe {
-      width: 100%;
-      height: 100%;
-      border: 0;
-    }
+  @keyframes scroll-left{
+    0%{ transform: translateX(0); }
+    100%{ transform: translateX(-100%); }
+  }
 
-    /* แถบข้อความวิ่งด้านล่าง */
-    .running-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 50px;
-      background: #ffd0e6;
-      display: flex;
-      align-items: center;
-      overflow: hidden;
-    }
-
-    .running-text {
-      white-space: nowrap;
-      display: inline-block;
-      font-size: 32px;
-      font-weight: bold;
-      color: #ff2b7a;
-      padding-left: 100%;
-      animation: scroll-left 12s linear infinite;
-    }
-
-    @keyframes scroll-left {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-100%); }
-    }
-  </style>
+  /* ถ้าต้องการให้ iframe ไม่ดักการคลิกตรงแถบ (ถ้แถบทับ) */
+  .frame iframe { pointer-events: auto; }
+  .running-bar { pointer-events: auto; } /* ต้องการให้คลิกได้บนแถบ */
+</style>
 </head>
-
 <body>
 
-  <!-- Looker Dashboard -->
   <div class="frame">
-    <iframe
+    <iframe id="lookerFrame"
       src="https://lookerstudio.google.com/embed/reporting/938cd05a-fabd-4e57-8a30-4a0f84aec97f/page/p_7hbif3pbyd"
-      allowfullscreen>
+      loading="lazy" allowfullscreen>
     </iframe>
   </div>
 
-  <!-- ข้อความวิ่งด้านล่าง -->
-  <div class="running-bar">
-    <div class="running-text">KYT : ทำ 5ส. ทุกครั้งก่อนเลิกงาน OK</div>
+  <div class="running-bar" id="runningBar">
+    <div class="running-text" id="runningText">KYT : ทำ 5ส. ทุกครั้งก่อนเลิกงาน OK</div>
   </div>
+
+<script>
+  // debug: เช็กว่าตัวแถบอยู่ใน DOM และมองเห็นไหม
+  console.log('runningBar DOM present:', !!document.getElementById('runningBar'));
+  const rb = document.getElementById('runningBar');
+  const rt = document.getElementById('runningText');
+
+  // ถ้าแถบมีขนาด 0 หรือถูกซ่อน จะ log ค่าด้านล่างออกมา
+  setTimeout(()=>{
+    if(!rb) console.error('runningBar not found in DOM');
+    else{
+      const cs = window.getComputedStyle(rb);
+      console.log('runningBar computed display:', cs.display, 'visibility:', cs.visibility, 'height:', cs.height, 'z-index:', cs.zIndex);
+    }
+    if(rt){
+      const cs2 = window.getComputedStyle(rt);
+      console.log('runningText computed display:', cs2.display, 'width:', cs2.width);
+    }
+  }, 500);
+
+  // รีเฟรช iframe เป็นระยะ (ถ้าต้องการ)
+  const refreshInterval = 4*60*1000;
+  setInterval(()=>{
+    const f = document.getElementById('lookerFrame');
+    if(f && f.src){ f.src = f.src; console.log('iframe refreshed'); }
+  }, refreshInterval);
+</script>
 
 </body>
 </html>
-
-
-
 
 
