@@ -2,19 +2,19 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Looker Embed</title>
   <style>
-    body, html {
+    html, body {
       margin: 0;
       padding: 0;
       height: 100%;
+      background: #fff;
       overflow: hidden;
     }
     .responsive-iframe {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
+      inset: 0;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -23,27 +23,37 @@
       width: 100%;
       height: 100%;
       border: 0;
-      object-fit: contain; /* 👈 ปรับให้แสดงพอดีในทุกขนาด */
     }
   </style>
 </head>
 <body>
   <div class="responsive-iframe">
-    <iframe width="600" height="282" src="https://lookerstudio.google.com/embed/reporting/938cd05a-fabd-4e57-8a30-4a0f84aec97f/page/p_7hbif3pbyd" frameborder="0" style="border:0" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+    <iframe
+      id="lookerFrame"
+      src="https://lookerstudio.google.com/embed/reporting/938cd05a-fabd-4e57-8a30-4a0f84aec97f/page/p_7hbif3pbyd"
+      frameborder="0"
+      allowfullscreen
+      loading="lazy">
+    </iframe>
   </div>
 
   <script>
-    // รีเฟรชทุก 4 นาที
-    const refreshInterval = 20 * 60 * 1000;
+    // รีเฟรชทุก 4 นาที (4 * 60 * 1000 ms)
+    const refreshInterval = 4 * 60 * 1000;
     setInterval(() => {
       const iframe = document.getElementById('lookerFrame');
-      iframe.src = iframe.src;
+      if (iframe && iframe.src) {
+        iframe.src = iframe.src;
+        console.log('Iframe refreshed at', new Date().toISOString());
+      }
     }, refreshInterval);
+
+    // Debug log
+    const iframe = document.getElementById('lookerFrame');
+    iframe.addEventListener('load', () => console.log('Iframe loaded OK'));
+    iframe.addEventListener('error', () => console.error('Iframe failed to load'));
   </script>
 </body>
-
 </html>
-
-
 
 
