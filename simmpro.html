@@ -2,59 +2,82 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Looker Embed</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Looker + Running Text</title>
+
   <style>
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
-      background: #fff;
       overflow: hidden;
+      background: #000;
     }
-    .responsive-iframe {
+
+    /* กล่อง Looker */
+    .frame {
       position: fixed;
-      inset: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: calc(100vh - 50px); /* เว้นที่ด้านล่างให้ข้อความวิ่ง */
     }
-    .responsive-iframe iframe {
+
+    .frame iframe {
       width: 100%;
       height: 100%;
       border: 0;
     }
+
+    /* แถบข้อความวิ่งด้านล่าง */
+    .running-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 50px;
+      background: #ffd0e6;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .running-text {
+      white-space: nowrap;
+      display: inline-block;
+      font-size: 32px;
+      font-weight: bold;
+      color: #ff2b7a;
+      padding-left: 100%;
+      animation: scroll-left 12s linear infinite;
+    }
+
+    @keyframes scroll-left {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-100%); }
+    }
   </style>
 </head>
+
 <body>
-  <div class="responsive-iframe">
+
+  <!-- Looker Dashboard -->
+  <div class="frame">
     <iframe
-      id="lookerFrame"
       src="https://lookerstudio.google.com/embed/reporting/938cd05a-fabd-4e57-8a30-4a0f84aec97f/page/p_7hbif3pbyd"
-      frameborder="0"
-      allowfullscreen
-      loading="lazy">
+      allowfullscreen>
     </iframe>
   </div>
 
-  <script>
-    // รีเฟรชทุก 4 นาที (4 * 60 * 1000 ms)
-    const refreshInterval = 15 * 60 * 1000;
-    setInterval(() => {
-      const iframe = document.getElementById('lookerFrame');
-      if (iframe && iframe.src) {
-        iframe.src = iframe.src;
-        console.log('Iframe refreshed at', new Date().toISOString());
-      }
-    }, refreshInterval);
+  <!-- ข้อความวิ่งด้านล่าง -->
+  <div class="running-bar">
+    <div class="running-text">KYT : ทำ 5ส. ทุกครั้งก่อนเลิกงาน OK</div>
+  </div>
 
-    // Debug log
-    const iframe = document.getElementById('lookerFrame');
-    iframe.addEventListener('load', () => console.log('Iframe loaded OK'));
-    iframe.addEventListener('error', () => console.error('Iframe failed to load'));
-  </script>
 </body>
 </html>
+
+
 
 
 
