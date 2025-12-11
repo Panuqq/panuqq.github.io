@@ -92,7 +92,7 @@
   }, 500);
 
   // รีเฟรช iframe เป็นระยะ (ถ้าต้องการ)
-  const refreshInterval = 4*60*1000;
+  const refreshInterval = 15*60*1000;
   setInterval(()=>{
     const f = document.getElementById('lookerFrame');
     if(f && f.src){ f.src = f.src; console.log('iframe refreshed'); }
@@ -101,6 +101,7 @@
 
 </body>
 </html>
+
 
 
 
